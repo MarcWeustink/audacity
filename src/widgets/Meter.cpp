@@ -1250,30 +1250,35 @@ void MeterPanel::HandleLayout(wxDC &dc)
       // height is now the entire height of the meter canvas
       height -= top + gap;
  
+      // We always have 2 bars
+      mNumBars = kMaxMeterBars;
+
       // barw is half of the canvas while allowing for a gap between meters
-      barw = (width - gap) / 2;
+      barw = (width - gap) / mNumBars;
 
       // barh is now the height of the canvas
       barh = height;
-
-      // We always have 2 bars
-      mNumBars = 2;
 
       // Save dimensions of the left bevel
       mBar[0].b = wxRect(left, top, barw, barh);
 
       // Save dimensions of the right bevel
-      mBar[1].b = mBar[0].b;
-      mBar[1].b.SetLeft(mBar[0].b.GetRight() + 1 + gap); // +1 for right edge
+      for (unsigned i = 1; i < mNumBars; i++)
+      {
+          mBar[i].b = mBar[i - 1].b;
+          mBar[i].b.SetLeft(mBar[i - 1].b.GetRight() + 1 + gap); // +1 for right edge
+      }
 
       // Set bar and clipping indicator dimensions
-      SetBarAndClip(0, true);
-      SetBarAndClip(1, true);
+      for (unsigned i = 0; i < mNumBars; i++)
+      {
+          SetBarAndClip(i, true);
+      }
 
-      mRuler.SetBounds(mBar[1].r.GetRight() + 1,   // +1 for the bevel
-                       mBar[1].r.GetTop(),
+      mRuler.SetBounds(mBar[mNumBars - 1].r.GetRight() + 1,   // +1 for the bevel
+                       mBar[0].r.GetTop(),
                        mWidth,
-                       mBar[1].r.GetBottom());
+                       mBar[mNumBars - 1].r.GetBottom());
       mRuler.OfflimitsPixels(0, 0);
       break;
    case VerticalStereo:
@@ -1297,6 +1302,9 @@ void MeterPanel::HandleLayout(wxDC &dc)
       mLeftTextPos = wxPoint(left - ltxtWidth - gap, height - gap - ltxtHeight);
       mRightTextPos = wxPoint(width - rside - gap, height - gap - rtxtHeight);
 
+      // We always have 2 bars
+      mNumBars = kMaxMeterBars;
+
       // left is now left edge of left bar
       left += gap;
 
@@ -1306,31 +1314,33 @@ void MeterPanel::HandleLayout(wxDC &dc)
       // height is now the entire height of the meter canvas
       height -= top + gap;
  
-      // barw is half of the canvas while allowing for a gap between meters
-      barw = (width - gap) / 2;
+	  // barw is half of the canvas while allowing for a gap between meters
+      barw = width / mNumBars - gap;
 
       // barh is now the height of the canvas
       barh = height;
-
-      // We always have 2 bars
-      mNumBars = 2;
 
       // Save dimensions of the left bevel
       mBar[0].b = wxRect(left, top, barw, barh);
 
       // Save dimensions of the right bevel
-      mBar[1].b = mBar[0].b;
-      mBar[1].b.SetLeft(mBar[0].b.GetRight() + 1 + gap); // +1 for right edge
+      for (unsigned i = 1; i < mNumBars; i++)
+      {
+          mBar[i].b = mBar[i - 1].b;
+          mBar[i].b.SetLeft(mBar[i - 1].b.GetRight() + 1 + gap); // +1 for right edge
+      }
 
       // Set bar and clipping indicator dimensions
-      SetBarAndClip(0, true);
-      SetBarAndClip(1, true);
+      for (unsigned i = 0; i < mNumBars; i++)
+      {
+          SetBarAndClip(i, true);
+      }
 
-      mRuler.SetBounds(mBar[1].r.GetRight() + 1,   // +1 for the bevel
-                       mBar[1].r.GetTop(),
+      mRuler.SetBounds(mBar[mNumBars - 1].r.GetRight() + 1,   // +1 for the bevel
+                       mBar[0].r.GetTop(),
                        mWidth,
-                       mBar[1].r.GetBottom());
-      mRuler.OfflimitsPixels(mRightTextPos.y - gap, mBar[1].r.GetBottom());
+                       mBar[0].r.GetBottom());
+      mRuler.OfflimitsPixels(mRightTextPos.y - gap, mBar[0].r.GetBottom());
       break;
    case VerticalStereoCompact:
       // Ensure there's a margin between top edge of window and the meters
@@ -1342,6 +1352,9 @@ void MeterPanel::HandleLayout(wxDC &dc)
       mIconRect.SetWidth(iconWidth);
       mIconRect.SetHeight(iconHeight);
 
+      // We always have 2 bars
+      mNumBars = kMaxMeterBars;
+
       // top is now the top of the bar
       top += iconHeight + gap;
 
@@ -1349,33 +1362,35 @@ void MeterPanel::HandleLayout(wxDC &dc)
       height -= top + gap + ltxtHeight + gap;
 
       // barw is half of the canvas while allowing for a gap between meters
-      barw = (width / 2) - gap;
+      barw = (width / mNumBars) - gap;
 
       // barh is now the height of the canvas
       barh = height;
-
-      // We always have 2 bars
-      mNumBars = 2;
 
       // Save dimensions of the left bevel
       mBar[0].b = wxRect(left, top, barw, barh);
 
       // Save dimensions of the right bevel
-      mBar[1].b = mBar[0].b;
-      mBar[1].b.SetLeft(mBar[0].b.GetRight() + 1 + gap); // +1 for right edge
+      for (unsigned i = 1; i < mNumBars; i++)
+      {
+          mBar[i].b = mBar[i - 1].b;
+          mBar[i].b.SetLeft(mBar[i - 1].b.GetRight() + 1 + gap); // +1 for right edge
+      }
 
       // Set bar and clipping indicator dimensions
-      SetBarAndClip(0, true);
-      SetBarAndClip(1, true);
+      for (unsigned i = 0; i < mNumBars; i++)
+      {
+          SetBarAndClip(i, true);
+      }
 
       // L/R is centered horizontally under each bar
       mLeftTextPos = wxPoint(mBar[0].b.GetLeft() + ((mBar[0].b.GetWidth() - ltxtWidth) / 2), top + barh + gap);
-      mRightTextPos = wxPoint(mBar[1].b.GetLeft() + ((mBar[1].b.GetWidth() - rtxtWidth) / 2), top + barh + gap);
+      mRightTextPos = wxPoint(mBar[kMaxMeterBars - 1].b.GetLeft() + ((mBar[kMaxMeterBars - 1].b.GetWidth() - rtxtWidth) / 2), top + barh + gap);
 
       mRuler.SetBounds((mWidth - mRulerWidth) / 2,
-                       mBar[1].r.GetTop(),
+                       mBar[0].r.GetTop(),
                        (mWidth - mRulerWidth) / 2,
-                       mBar[1].r.GetBottom());
+                       mBar[0].r.GetBottom());
       mRuler.OfflimitsPixels(0, 0);
       break;
    case HorizontalStereo:
@@ -1395,6 +1410,9 @@ void MeterPanel::HandleLayout(wxDC &dc)
       // Make sure there's room for icon and gap between the bottom of the meter and icon
       height -= iconHeight + gap;
 
+      // We always have 2 bars
+      mNumBars = kMaxMeterBars;
+
       // L/R is centered vertically and to the left of a each bar
       mLeftTextPos = wxPoint(left, (height / 4) - ltxtHeight / 2);
       mRightTextPos = wxPoint(left, (height * 3 / 4) - rtxtHeight / 2);
@@ -1412,26 +1430,28 @@ void MeterPanel::HandleLayout(wxDC &dc)
       barw = width - gap;
 
       // barh is half of the canvas while allowing for a gap between meters
-      barh = (height - gap) / 2;
-
-      // We always have 2 bars
-      mNumBars = 2;
+      barh = height / mNumBars - gap;
 
       // Save dimensions of the top bevel
       mBar[0].b = wxRect(left, top, barw, barh);
 
       // Save dimensions of the bottom bevel
-      mBar[1].b = mBar[0].b;
-      mBar[1].b.SetTop(mBar[0].b.GetBottom() + 1 + gap); // +1 for bottom edge
-
+      for (unsigned i = 1; i < mNumBars; i++)
+      {
+          mBar[i].b = mBar[i - 1].b;
+          mBar[i].b.SetTop(mBar[i - 1].b.GetBottom() + 1 + gap); // +1 for bottom edge
+      }
+   
       // Set bar and clipping indicator dimensions
-      SetBarAndClip(0, false);
-      SetBarAndClip(1, false);
+      for (unsigned i = 0; i < mNumBars; i++)
+      {
+          SetBarAndClip(i, false);
+      }
 
-      mRuler.SetBounds(mBar[1].r.GetLeft(),
-                       mBar[1].r.GetBottom() + 1, // +1 to fit below bevel
-                       mBar[1].r.GetRight(),
-                       mHeight - mBar[1].r.GetBottom() + 1);
+      mRuler.SetBounds(mBar[0].r.GetLeft(),
+                       mBar[kMaxMeterBars - 1].r.GetBottom() + 1, // +1 to fit below bevel
+                       mBar[kMaxMeterBars - 1].r.GetRight(),
+                       mHeight - mBar[kMaxMeterBars - 1].r.GetBottom() + 1);
       mRuler.OfflimitsPixels(0, mIconRect.GetRight() - 4);
       break;
    case HorizontalStereoCompact:
@@ -1452,6 +1472,9 @@ void MeterPanel::HandleLayout(wxDC &dc)
       mLeftTextPos = wxPoint(left, (height / 4) - (ltxtHeight / 2));
       mRightTextPos = wxPoint(left, (height * 3 / 4) - (ltxtHeight / 2));
 
+      // We always have 2 bars
+      mNumBars = kMaxMeterBars;
+
       // Add width of widest of the L/R characters and a gap between labels and meter bevel
       left += intmax(ltxtWidth, rtxtWidth) + gap;
 
@@ -1462,10 +1485,7 @@ void MeterPanel::HandleLayout(wxDC &dc)
       barw = width - gap;
 
       // barh is half of the canvas while allowing for a gap between meters
-      barh = (height - gap) / 2;
-
-      // We always have 2 bars
-      mNumBars = 2;
+      barh = (height - gap) / mNumBars;
 
       // Save dimensions of the top bevel
       mBar[0].b = wxRect(left, top, barw, barh);
@@ -1474,18 +1494,22 @@ void MeterPanel::HandleLayout(wxDC &dc)
       // Since the bars butt up against the window's top and bottom edges, we need
       // to include an extra pixel in the bottom bar when the window height and
       // meter height do not exactly match.
-      mBar[1].b = mBar[0].b;
-      mBar[1].b.SetTop(mBar[0].b.GetBottom() + 1 + gap); // +1 for bottom bevel
-      mBar[1].b.SetHeight(mHeight - mBar[1].b.GetTop() - 1); // +1 for bottom bevel
-
+      for (unsigned i = 1; i < mNumBars; i++)
+      {
+          mBar[i].b = mBar[i - 1].b;
+          mBar[i].b.SetTop(mBar[i - 1].b.GetBottom() + 1 + gap); // +1 for bottom bevel
+        //  mBar[i].b.SetHeight(mHeight - mBar[i - 1].b.GetTop() - 1); // +1 for bottom bevel
+      }
       // Add clipping indicators - do after setting bar/bevel dimensions above
-      SetBarAndClip(0, false);
-      SetBarAndClip(1, false);
+      for (unsigned i = 0; i < mNumBars; i++)
+      {
+          SetBarAndClip(i, false);
+      }
 
-      mRuler.SetBounds(mBar[1].r.GetLeft(),
-                       mBar[1].b.GetTop() - (mRulerHeight / 2),
-                       mBar[1].r.GetRight(),
-                       mBar[1].b.GetTop() - (mRulerHeight / 2));
+      mRuler.SetBounds(mBar[0].r.GetLeft(),
+                       (height - mRulerHeight) / 2,
+                       mBar[0].r.GetRight(),
+                       (height + mRulerHeight) / 2);
       mRuler.OfflimitsPixels(0, 0);
       break;
    }

@@ -37,7 +37,7 @@ wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
 
 // Increase this when we add support for multichannel meters
 // (most of the code is already there)
-const int kMaxMeterBars = 2;
+const int kMaxMeterBars = 8;
 
 struct MeterBar {
    bool   vert;
